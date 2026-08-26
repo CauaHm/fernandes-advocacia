@@ -353,8 +353,8 @@
     </div>
 
     <div class="trust-strip">
-      <div class="trust-item"><strong class="stat"><span class="counter" data-target="10">0</span>+</strong><span>Anos de atuação</span></div>
-      <div class="trust-item"><strong class="stat"><span class="counter" data-target="5">0</span>,0 ★</strong><span>Avaliação no Google</span></div>
+      <div class="trust-item"><strong class="stat">10+</strong><span>Anos de atuação</span></div>
+      <div class="trust-item"><strong class="stat">5,0 ★</strong><span>Avaliação no Google</span></div>
       <div class="trust-item"><strong>OAB/SP</strong><span>165.975</span></div>
       <div class="trust-item"><strong>Sorocaba</strong><span>Centro, SP</span></div>
     </div>
@@ -552,27 +552,6 @@
     revealEls.forEach(function(el){ el.classList.add('is-visible'); });
   }
 
-  // Contadores animados nos números de destaque do topo
-  var counters = document.querySelectorAll('.counter');
-  var counted = false;
-  function animateCounters(){
-    if(counted) return;
-    counted = true;
-    counters.forEach(function(el){
-      var target = parseFloat(el.getAttribute('data-target'));
-      var startTime = null;
-      var duration = 1100;
-      function step(ts){
-        if(!startTime) startTime = ts;
-        var progress = Math.min((ts - startTime) / duration, 1);
-        el.textContent = Math.floor(progress * target);
-        if(progress < 1){ requestAnimationFrame(step); }
-        else { el.textContent = target; }
-      }
-      requestAnimationFrame(step);
-    });
-  }
-  setTimeout(animateCounters, 700);
 </script>
 
 </body>
