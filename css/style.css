@@ -1,0 +1,744 @@
+/* ==========================================================================
+   Fernandes Advocacia
+   Conceito: placa de bronze gravada. Fundo escuro de galeria, tipografia
+   Didone (Bodoni Moda) com contraste alto, filetes de ouro e a balança
+   como elemento que busca o equilíbrio.
+   Paleta herdada do site original (grafite + ouro + osso).
+   ========================================================================== */
+
+:root{
+  /* Grafites — do mais profundo ao mais claro */
+  --grafite-900:#0d0e10;
+  --grafite-800:#121316;
+  --grafite-700:#1c1e23;
+  --grafite-600:#2a2d34;
+  --grafite-500:#3a3e46;
+
+  /* Neutros claros */
+  --osso:#f6f4ef;
+  --cinza:#b9bcc4;
+  --cinza-med:#9aa0aa;
+
+  /* Ouro (accent único) */
+  --ouro:#b0904f;
+  --ouro-claro:#d4b876;
+  --ouro-fosco:rgba(176,144,79,.28);
+
+  --whatsapp:#0e7c3f; /* verde escurecido: o #25D366 oficial não atinge AA com texto branco */
+
+  --linha:rgba(246,244,239,.10);
+  --linha-ouro:rgba(176,144,79,.32);
+
+  --sombra-gravada:0 1px 0 rgba(0,0,0,.65);
+
+  --ease-saida:cubic-bezier(.16,1,.3,1);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Archivo',system-ui,sans-serif;
+  background:var(--grafite-900);
+  color:var(--cinza);
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+h1,h2,h3,.didone{
+  font-family:'Bodoni Moda',Didot,'Times New Roman',serif;
+  color:var(--osso);
+  font-weight:400;
+  line-height:1.1;
+  letter-spacing:-.005em;
+}
+
+/* Os algarismos ficam SEMPRE na sans.
+   A Bodoni Moda, como a Playfair antes dela, renderiza numerais de forma
+   inconsistente em alguns pesos — foi a origem de três correções seguidas
+   no histórico deste projeto. Numeral aqui não usa serifada. */
+.num{
+  font-family:'Archivo',system-ui,sans-serif;
+  font-variant-numeric:lining-nums tabular-nums;
+  font-weight:600;
+  letter-spacing:-.01em;
+}
+
+a{color:inherit;}
+img,svg{display:block;max-width:100%;}
+
+.container{max-width:1180px;margin:0 auto;padding:0 1.5rem;}
+
+/* Rótulo: caixa alta bem espaçada, sem monoespaçada */
+.rotulo{
+  display:inline-block;
+  font-size:.7rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.24em;
+  color:var(--ouro-claro);
+}
+
+/* Filete gravado: régua fina com losango central, como gravação em metal */
+.filete{
+  display:flex;align-items:center;gap:1rem;
+  margin:0 auto;max-width:340px;
+}
+.filete::before,.filete::after{
+  content:"";flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,var(--linha-ouro),transparent);
+}
+.filete i{
+  width:6px;height:6px;flex-shrink:0;
+  background:var(--ouro);transform:rotate(45deg);
+}
+
+/* ---------- Acessibilidade ---------- */
+.pular{
+  position:absolute;left:1rem;top:-4rem;z-index:200;
+  background:var(--ouro);color:var(--grafite-900);
+  padding:.75rem 1.25rem;border-radius:2px;
+  font-size:.85rem;font-weight:600;text-decoration:none;
+  transition:top .2s ease;
+}
+.pular:focus{top:1rem;}
+a:focus-visible,button:focus-visible,input:focus-visible,
+textarea:focus-visible,select:focus-visible,summary:focus-visible{
+  outline:2px solid var(--ouro-claro);
+  outline-offset:3px;
+}
+
+/* ==========================================================================
+   Fio de prumo — trilho fixo à esquerda que marca o progresso da leitura.
+   É o fio da balança: desce a página conforme você avança.
+   ========================================================================== */
+.prumo{
+  position:fixed;left:2.25rem;top:0;bottom:0;width:1px;z-index:40;
+  background:var(--linha);
+  pointer-events:none;
+}
+.prumo-fio{
+  position:absolute;top:0;left:0;width:100%;
+  height:var(--progresso,0%);
+  background:linear-gradient(180deg,var(--ouro-claro),var(--ouro));
+  transition:height .1s linear;
+}
+.prumo-peso{
+  position:absolute;left:50%;top:var(--progresso,0%);
+  width:7px;height:7px;margin-left:-3.5px;margin-top:-3.5px;
+  background:var(--ouro-claro);transform:rotate(45deg);
+  transition:top .1s linear;
+  box-shadow:0 0 10px rgba(212,184,118,.6);
+}
+@media (max-width:1280px){ .prumo{display:none;} }
+
+/* ==========================================================================
+   Cabeçalho
+   ========================================================================== */
+header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(13,14,16,.82);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid transparent;
+  transition:background .4s ease, border-color .4s ease;
+}
+header.rolado{
+  background:rgba(13,14,16,.97);
+  border-bottom-color:var(--linha);
+}
+.nav{
+  display:flex;align-items:center;justify-content:space-between;gap:2rem;
+  max-width:1180px;margin:0 auto;padding:1.1rem 1.5rem;
+}
+.marca{display:flex;align-items:center;gap:.85rem;text-decoration:none;}
+.marca-emblema{
+  width:34px;height:34px;flex-shrink:0;
+  border:1px solid var(--linha-ouro);
+  display:flex;align-items:center;justify-content:center;
+}
+.marca-emblema svg{width:18px;height:18px;color:var(--ouro);}
+.marca-nome{display:flex;flex-direction:column;line-height:1.2;}
+.marca-nome strong{
+  font-family:'Bodoni Moda',serif;font-weight:500;
+  font-size:1.02rem;color:var(--osso);letter-spacing:.01em;
+}
+.marca-nome span{
+  font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--cinza-med);font-weight:500;
+}
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{
+  position:relative;text-decoration:none;
+  font-size:.78rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--cinza);transition:color .25s ease;padding-bottom:2px;
+}
+.nav-links a:hover,.nav-links a.ativo{color:var(--osso);}
+.nav-links a::after{
+  content:"";position:absolute;left:0;bottom:-4px;
+  width:0;height:1px;background:var(--ouro);
+  transition:width .3s var(--ease-saida);
+}
+.nav-links a:hover::after,.nav-links a.ativo::after{width:100%;}
+.menu-toggle{
+  display:none;background:none;border:0;color:var(--osso);
+  font-size:1.4rem;cursor:pointer;line-height:1;padding:.2rem;
+}
+
+/* ==========================================================================
+   Botões — bisel sutil, como metal usinado
+   ========================================================================== */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.6rem;
+  padding:.9rem 1.9rem;border:1px solid transparent;
+  font-family:'Archivo',sans-serif;
+  font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  text-decoration:none;cursor:pointer;
+  transition:transform .25s var(--ease-saida), background .3s ease,
+             border-color .3s ease, color .3s ease;
+}
+.btn:hover{transform:translateY(-2px);}
+.btn-ouro{
+  background:linear-gradient(180deg,var(--ouro-claro),var(--ouro));
+  color:var(--grafite-900);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28), 0 8px 24px rgba(0,0,0,.4);
+}
+.btn-ouro:hover{background:linear-gradient(180deg,#e0c68b,var(--ouro-claro));}
+.btn-fantasma{border-color:var(--linha);color:var(--osso);background:transparent;}
+.btn-fantasma:hover{border-color:var(--ouro);color:var(--ouro-claro);}
+
+/* ==========================================================================
+   Hero
+   ========================================================================== */
+.hero{
+  position:relative;
+  min-height:88vh;
+  display:flex;align-items:center;
+  overflow:hidden;
+  background:var(--grafite-900);
+  padding:0; /* anula o padding genérico de section: o respiro vem de .hero-conteudo */
+}
+/* Luz que segue o ponteiro — só em dispositivos com mouse */
+.hero-luz{
+  position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:radial-gradient(420px circle at var(--mx,70%) var(--my,30%),
+             rgba(176,144,79,.13), transparent 70%);
+  opacity:0;transition:opacity .6s ease;
+}
+@media (pointer:fine){ .hero:hover .hero-luz{opacity:1;} }
+
+.hero-imagem{
+  position:absolute;top:0;right:0;bottom:0;
+  width:42%;
+  z-index:0;
+}
+.hero-imagem img{
+  width:100%;height:100%;object-fit:cover;object-position:32% center;
+  filter:grayscale(.25) contrast(1.05);
+}
+/* Degradê que funde a imagem no fundo, sem borda dura */
+.hero-imagem::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(90deg,
+    var(--grafite-900) 0%,
+    rgba(13,14,16,.75) 28%,
+    rgba(13,14,16,.25) 65%,
+    rgba(13,14,16,.55) 100%);
+}
+
+.hero-conteudo{
+  position:relative;z-index:2;
+  max-width:1180px;margin:0 auto;padding:5rem 1.5rem 4rem;
+  width:100%;
+}
+.hero-texto{max-width:640px;}
+
+/* Emblema da balança */
+.balanca{width:70px;height:70px;margin-bottom:1.5rem;color:var(--ouro);}
+.balanca svg{width:100%;height:100%;overflow:visible;}
+
+.hero h1{
+  font-size:clamp(2.5rem,5.6vw,4.4rem);
+  margin:1.4rem 0 1.6rem;
+  letter-spacing:-.015em;
+}
+.hero h1 em{
+  font-style:italic;
+  color:var(--ouro-claro);
+}
+.hero-sub{
+  font-size:1.05rem;color:var(--cinza);
+  max-width:480px;margin-bottom:2rem;
+}
+.hero-acoes{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2.5rem;}
+
+/* Faixa de dados — gravada, não em cartões */
+.hero-dados{
+  display:flex;flex-wrap:wrap;gap:2.5rem;
+  padding-top:1.8rem;
+  border-top:1px solid var(--linha);
+}
+.dado-item{min-width:0;}
+.dado-valor{
+  display:block;font-size:1.45rem;color:var(--ouro-claro);
+  line-height:1.15;margin-bottom:.15rem;
+  text-shadow:var(--sombra-gravada);
+}
+.dado-rotulo{
+  display:block;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--cinza-med);font-weight:500;
+}
+
+@media (max-width:960px){
+  .hero{min-height:auto;}
+  .hero-imagem{
+    position:relative;width:100%;height:300px;
+  }
+  .hero-imagem::after{
+    background:linear-gradient(180deg,rgba(13,14,16,.35) 0%,var(--grafite-900) 92%);
+  }
+  .hero{flex-direction:column-reverse;}
+  .hero-conteudo{padding:2rem 1.5rem 4rem;}
+  .hero-texto{max-width:none;}
+  .hero-sub{max-width:none;}
+  .hero-dados{gap:1.8rem 2.2rem;}
+}
+
+/* ==========================================================================
+   Seções
+   ========================================================================== */
+section{padding:7rem 0;position:relative;}
+.cabeca{max-width:660px;margin:0 auto 3.8rem;text-align:center;}
+.cabeca .rotulo{margin-bottom:1.1rem;}
+.cabeca h2{font-size:clamp(1.9rem,3.6vw,2.9rem);margin-bottom:1.1rem;}
+.cabeca p{color:var(--cinza-med);}
+.cabeca .filete{margin-top:1.6rem;}
+
+/* Revelação: o conteúdo sobe por trás de uma máscara, como se fosse iluminado */
+.revelar{
+  opacity:0;transform:translateY(30px);
+  transition:opacity .9s var(--ease-saida), transform .9s var(--ease-saida);
+}
+.revelar.visivel{opacity:1;transform:translateY(0);}
+.revelar-2{transition-delay:.09s;}
+.revelar-3{transition-delay:.18s;}
+.revelar-4{transition-delay:.27s;}
+
+/* ==========================================================================
+   Sobre — texto + placa de bronze
+   ========================================================================== */
+.sobre{background:var(--grafite-800);}
+.sobre-grade{
+  display:grid;grid-template-columns:1.1fr .9fr;gap:4.5rem;align-items:center;
+}
+.sobre-texto h2{margin:1.2rem 0 1.5rem;font-size:clamp(1.8rem,3.2vw,2.6rem);}
+.sobre-texto p{margin-bottom:1.2rem;}
+.sobre-texto p strong{color:var(--osso);font-weight:500;}
+
+/* A placa: dupla moldura, gradiente metálico, texto gravado */
+.placa{
+  position:relative;
+  background:linear-gradient(155deg,var(--grafite-600) 0%,var(--grafite-700) 45%,var(--grafite-800) 100%);
+  border:1px solid var(--linha-ouro);
+  padding:2.4rem 2.2rem;
+  box-shadow:0 24px 60px rgba(0,0,0,.5), inset 0 1px 0 rgba(246,244,239,.07);
+}
+.placa::before{
+  content:"";position:absolute;inset:9px;
+  border:1px solid rgba(176,144,79,.2);
+  pointer-events:none;
+}
+.placa-titulo{
+  text-align:center;font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--ouro);font-weight:600;
+  margin-bottom:1.8rem;text-shadow:var(--sombra-gravada);
+}
+.placa-linha{
+  display:flex;justify-content:space-between;align-items:baseline;gap:1.2rem;
+  padding:.85rem 0;border-bottom:1px solid rgba(176,144,79,.14);
+}
+.placa-linha:last-child{border-bottom:0;}
+.placa-chave{
+  font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--cinza-med);font-weight:500;flex-shrink:0;
+}
+.placa-valor{
+  font-size:.92rem;color:var(--osso);text-align:right;
+  text-shadow:var(--sombra-gravada);
+}
+
+@media (max-width:900px){
+  .sobre-grade{grid-template-columns:1fr;gap:3rem;}
+}
+
+/* ==========================================================================
+   Citação em faixa cheia
+   ========================================================================== */
+.citacao{
+  padding:8rem 0;text-align:center;
+  background-image:linear-gradient(180deg,rgba(13,14,16,.86),rgba(13,14,16,.92)),
+                   url('../assets/img/balanca-macro.webp');
+  background-size:cover;background-position:center;
+  background-attachment:fixed;
+}
+.citacao blockquote{
+  font-family:'Bodoni Moda',serif;
+  font-size:clamp(1.5rem,3.4vw,2.5rem);
+  font-style:italic;font-weight:400;color:var(--osso);
+  max-width:760px;margin:1.6rem auto 0;line-height:1.35;
+}
+.citacao blockquote span{color:var(--ouro-claro);}
+@media (max-width:820px){
+  .citacao{background-attachment:scroll;padding:5.5rem 0;}
+}
+
+/* ==========================================================================
+   Áreas — índice gravado, não cartões
+   ========================================================================== */
+.areas{background:var(--grafite-900);}
+.areas-indice{
+  max-width:900px;margin:0 auto;
+  border-top:1px solid var(--linha);
+}
+.area{
+  display:grid;grid-template-columns:auto 1fr auto;
+  gap:2rem;align-items:center;
+  padding:1.9rem .6rem;
+  border-bottom:1px solid var(--linha);
+  position:relative;
+  transition:padding-left .4s var(--ease-saida), background .4s ease;
+}
+/* Um filete de ouro cresce da esquerda ao passar o mouse */
+.area::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;
+  width:2px;background:var(--ouro);
+  transform:scaleY(0);transform-origin:center;
+  transition:transform .4s var(--ease-saida);
+}
+.area:hover{padding-left:1.6rem;background:rgba(246,244,239,.02);}
+.area:hover::before{transform:scaleY(1);}
+.area-num{
+  font-size:.72rem;letter-spacing:.1em;color:var(--ouro);
+  font-weight:600;min-width:2rem;
+  text-shadow:var(--sombra-gravada);
+}
+.area-corpo h3{
+  font-family:'Archivo',sans-serif;
+  font-size:1.05rem;font-weight:600;color:var(--osso);
+  margin-bottom:.25rem;letter-spacing:0;
+}
+.area-corpo p{font-size:.88rem;color:var(--cinza-med);}
+.area-seta{
+  color:var(--ouro);opacity:0;transform:translateX(-8px);
+  transition:opacity .4s ease, transform .4s var(--ease-saida);
+}
+.area:hover .area-seta{opacity:1;transform:translateX(0);}
+.area-seta svg{width:18px;height:18px;}
+
+.aviso-areas{
+  text-align:center;font-size:.78rem;color:var(--cinza-med);
+  margin-top:2.4rem;font-style:italic;
+}
+
+@media (max-width:640px){
+  .area{grid-template-columns:auto 1fr;gap:1.2rem;padding:1.5rem .4rem;}
+  .area-seta{display:none;}
+}
+
+/* ==========================================================================
+   Confiança / avaliações
+   ========================================================================== */
+.confianca{
+  background-image:linear-gradient(180deg,rgba(18,19,22,.93),rgba(13,14,16,.96)),
+                   url('../assets/img/justica-grafico.webp');
+  background-size:cover;background-position:center;
+}
+.nota-bloco{text-align:center;margin-bottom:3rem;}
+.nota-valor{
+  font-size:clamp(3.4rem,8vw,5.4rem);color:var(--ouro-claro);
+  line-height:1;display:block;text-shadow:var(--sombra-gravada);
+}
+.nota-estrelas{
+  color:var(--ouro);letter-spacing:.35em;font-size:1.05rem;
+  margin:.9rem 0 .6rem;
+}
+.nota-fonte{font-size:.82rem;color:var(--cinza-med);}
+
+.avaliadores{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:.7rem;
+  max-width:620px;margin:0 auto;
+}
+.avaliador{
+  display:flex;align-items:center;gap:.6rem;
+  border:1px solid var(--linha);
+  padding:.6rem 1.1rem .6rem .6rem;
+  background:rgba(246,244,239,.02);
+}
+.avaliador-inicial{
+  width:30px;height:30px;flex-shrink:0;
+  border:1px solid var(--linha-ouro);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bodoni Moda',serif;font-size:.85rem;color:var(--ouro-claro);
+}
+.avaliador span{font-size:.85rem;color:var(--cinza);}
+
+.nota-ressalva{
+  text-align:center;font-size:.76rem;color:var(--cinza-med);
+  max-width:560px;margin:2.6rem auto 0;line-height:1.6;
+}
+
+/* ==========================================================================
+   Dúvidas
+   ========================================================================== */
+.duvidas{background:var(--grafite-800);}
+.duvidas-lista{max-width:780px;margin:0 auto;}
+.duvida{
+  border-bottom:1px solid var(--linha);
+}
+.duvida summary{
+  list-style:none;cursor:pointer;
+  display:flex;justify-content:space-between;align-items:center;gap:1.5rem;
+  padding:1.5rem .4rem;
+  font-size:1rem;font-weight:500;color:var(--osso);
+  transition:color .25s ease;
+}
+.duvida summary::-webkit-details-marker{display:none;}
+.duvida summary:hover{color:var(--ouro-claro);}
+.duvida-sinal{
+  position:relative;width:14px;height:14px;flex-shrink:0;
+}
+.duvida-sinal::before,.duvida-sinal::after{
+  content:"";position:absolute;background:var(--ouro);
+  transition:transform .35s var(--ease-saida), opacity .35s ease;
+}
+.duvida-sinal::before{left:0;top:6px;width:14px;height:1px;}
+.duvida-sinal::after{left:6px;top:0;width:1px;height:14px;}
+.duvida[open] .duvida-sinal::after{transform:rotate(90deg);opacity:0;}
+.duvida-resposta{
+  padding:0 .4rem 1.6rem;color:var(--cinza-med);font-size:.93rem;
+  max-width:640px;
+}
+.duvida-resposta .pendente{color:var(--ouro-claro);font-style:italic;}
+
+/* ==========================================================================
+   Contato
+   ========================================================================== */
+.contato{background:var(--grafite-900);}
+.contato-grade{display:grid;grid-template-columns:.85fr 1.15fr;gap:4rem;}
+
+.contato-lista{list-style:none;}
+.contato-lista li{display:flex;gap:1rem;margin-bottom:1.8rem;align-items:flex-start;}
+.contato-lista svg{width:18px;height:18px;color:var(--ouro);flex-shrink:0;margin-top:.35rem;}
+.contato-chave{
+  display:block;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--cinza-med);font-weight:600;margin-bottom:.3rem;
+}
+.contato-valor,.contato-lista a{font-size:.94rem;color:var(--osso);text-decoration:none;}
+.contato-lista a:hover{color:var(--ouro-claro);}
+
+.mapa{
+  margin-top:2rem;border:1px solid var(--linha);
+  filter:grayscale(1) contrast(.9) brightness(.85);
+  transition:filter .5s ease;
+}
+.mapa:hover{filter:grayscale(.2) contrast(1) brightness(1);}
+.mapa iframe{width:100%;height:230px;border:0;display:block;}
+
+/* Formulário: campos com linha inferior, sem caixas */
+.form-titulo{
+  font-family:'Bodoni Moda',serif;font-size:1.35rem;color:var(--osso);
+  margin-bottom:2rem;
+}
+.campo{margin-bottom:1.8rem;}
+.campo-duplo{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+.campo label{
+  display:block;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--cinza-med);font-weight:600;margin-bottom:.6rem;
+}
+.campo input,.campo textarea,.campo select{
+  width:100%;padding:.6rem 0;
+  border:0;border-bottom:1px solid var(--linha);
+  background:transparent;color:var(--osso);
+  font-family:'Archivo',sans-serif;font-size:.95rem;
+  transition:border-color .3s ease;
+}
+.campo select{cursor:pointer;}
+.campo select option{background:var(--grafite-700);color:var(--osso);}
+.campo input:focus,.campo textarea:focus,.campo select:focus{
+  outline:none;border-bottom-color:var(--ouro);
+}
+.campo textarea{resize:vertical;min-height:90px;}
+.campo input::placeholder,.campo textarea::placeholder{color:var(--grafite-500);}
+
+.consentimento{display:flex;gap:.85rem;align-items:flex-start;margin-bottom:2rem;}
+.consentimento input{
+  width:auto;margin-top:.35rem;flex-shrink:0;accent-color:var(--ouro);
+}
+.consentimento label{
+  font-size:.82rem;letter-spacing:0;text-transform:none;
+  color:var(--cinza-med);font-weight:400;line-height:1.6;margin:0;
+}
+.consentimento a{color:var(--ouro-claro);text-decoration:underline;}
+
+@media (max-width:900px){
+  .contato-grade{grid-template-columns:1fr;gap:3rem;}
+}
+@media (max-width:560px){
+  .campo-duplo{grid-template-columns:1fr;gap:0;}
+}
+
+/* ==========================================================================
+   Rodapé
+   ========================================================================== */
+footer{
+  background:var(--grafite-800);
+  border-top:1px solid var(--linha);
+  padding:3.5rem 0 1.8rem;
+}
+.rodape-grade{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  gap:2.5rem;flex-wrap:wrap;margin-bottom:2.5rem;
+}
+.rodape-marca .marca-emblema{margin-bottom:1rem;}
+.rodape-marca strong{
+  display:block;font-family:'Bodoni Moda',serif;font-size:1.15rem;
+  color:var(--osso);font-weight:500;margin-bottom:.4rem;
+}
+.rodape-marca span{font-size:.85rem;color:var(--cinza-med);}
+.rodape-dados{text-align:right;font-size:.82rem;color:var(--cinza-med);line-height:2;}
+.rodape-dados a{color:var(--cinza);text-decoration:underline;}
+.rodape-dados a:hover{color:var(--ouro-claro);}
+.rodape-base{
+  border-top:1px solid var(--linha);padding-top:1.6rem;
+  display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  font-size:.76rem;color:var(--cinza-med);
+}
+.nota-demo{
+  text-align:center;font-size:.72rem;color:var(--grafite-500);
+  margin-top:1.4rem;padding-top:1.2rem;border-top:1px solid var(--linha);
+  line-height:1.6;
+}
+@media (max-width:720px){
+  .rodape-grade{flex-direction:column;}
+  .rodape-dados{text-align:left;}
+}
+
+/* ==========================================================================
+   WhatsApp flutuante
+   ========================================================================== */
+.zap{
+  position:fixed;right:1.6rem;bottom:1.6rem;z-index:70;
+  width:54px;height:54px;border-radius:50%;
+  background:var(--whatsapp);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 10px 28px rgba(0,0,0,.5);
+  text-decoration:none;
+  transition:transform .3s var(--ease-saida);
+}
+.zap:hover{transform:scale(1.09);}
+.zap svg{width:27px;height:27px;}
+@media (max-width:680px){ .zap{right:1rem;bottom:1rem;width:50px;height:50px;} }
+
+/* ==========================================================================
+   Menu mobile
+   ========================================================================== */
+@media (max-width:900px){
+  .nav-links{display:none;}
+  .menu-toggle{display:block;}
+  .nav-links.aberto{
+    display:flex;flex-direction:column;gap:1.4rem;
+    position:absolute;top:100%;left:0;right:0;
+    background:var(--grafite-900);
+    padding:1.8rem 1.5rem 2rem;
+    border-bottom:1px solid var(--linha);
+  }
+}
+
+/* ==========================================================================
+   Página institucional simples (privacidade)
+   ========================================================================== */
+.pagina{padding:5rem 0 7rem;max-width:780px;}
+.pagina h1{font-size:clamp(2rem,4.5vw,2.9rem);margin-bottom:.6rem;}
+.pagina .atualizado{
+  display:block;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--cinza-med);margin-bottom:3rem;
+}
+.pagina h2{font-size:1.3rem;margin:2.8rem 0 1rem;}
+.pagina p,.pagina li{margin-bottom:1rem;font-size:.96rem;}
+.pagina ul{padding-left:1.4rem;}
+.pagina a{color:var(--ouro-claro);text-decoration:underline;}
+.pagina strong{color:var(--osso);font-weight:500;}
+.voltar{
+  display:inline-block;margin-bottom:2.5rem;
+  font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ouro-claro);text-decoration:none;font-weight:600;
+}
+.voltar:hover{color:var(--ouro);}
+
+/* ==========================================================================
+   Animação da balança — busca o equilíbrio ao carregar e depois oscila
+   de leve, como um objeto real ainda em movimento.
+   ========================================================================== */
+.viga,.prato-e,.prato-d{
+  transform-box:view-box;
+}
+.viga{transform-origin:60px 22px;}
+.prato-e{transform-origin:22px 34px;}
+.prato-d{transform-origin:98px 34px;}
+
+@keyframes assenta{
+  0%   {transform:rotate(-11deg);}
+  45%  {transform:rotate(5deg);}
+  70%  {transform:rotate(-2.2deg);}
+  88%  {transform:rotate(.8deg);}
+  100% {transform:rotate(0deg);}
+}
+@keyframes assenta-inv{
+  0%   {transform:rotate(11deg);}
+  45%  {transform:rotate(-5deg);}
+  70%  {transform:rotate(2.2deg);}
+  88%  {transform:rotate(-.8deg);}
+  100% {transform:rotate(0deg);}
+}
+@keyframes respira{
+  from{transform:rotate(-.9deg);}
+  to  {transform:rotate(.9deg);}
+}
+@keyframes respira-inv{
+  from{transform:rotate(.9deg);}
+  to  {transform:rotate(-.9deg);}
+}
+.viga{
+  animation:assenta 2.4s var(--ease-saida) both,
+            respira 7s 2.4s ease-in-out infinite alternate;
+}
+.prato-e,.prato-d{
+  animation:assenta-inv 2.4s var(--ease-saida) both,
+            respira-inv 7s 2.4s ease-in-out infinite alternate;
+}
+
+/* Entrada dos elementos do hero */
+@keyframes sobe{
+  from{opacity:0;transform:translateY(26px);}
+  to  {opacity:1;transform:translateY(0);}
+}
+.hero .balanca{animation:sobe .9s var(--ease-saida) .1s both;}
+.hero .rotulo{animation:sobe .9s var(--ease-saida) .25s both;}
+.hero h1{animation:sobe .9s var(--ease-saida) .4s both;}
+.hero-sub{animation:sobe .9s var(--ease-saida) .55s both;}
+.hero-acoes{animation:sobe .9s var(--ease-saida) .7s both;}
+.hero-dados{animation:sobe .9s var(--ease-saida) .85s both;}
+.hero-imagem{animation:sobe 1.4s var(--ease-saida) both;}
+
+/* ==========================================================================
+   Movimento reduzido — desliga tudo que se move
+   ========================================================================== */
+@media (prefers-reduced-motion:reduce){
+  .revelar{opacity:1 !important;transform:none !important;}
+  .viga,.prato-e,.prato-d{animation:none !important;}
+  .prumo-fio,.prumo-peso{transition:none !important;}
+  .citacao{background-attachment:scroll !important;}
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    scroll-behavior:auto !important;
+  }
+}
