@@ -630,26 +630,13 @@ footer{
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 10px 28px rgba(0,0,0,.5);
   text-decoration:none;
-  transition:transform .3s var(--ease-saida);
+  transition:transform .3s var(--ease-saida), opacity .3s ease;
 }
 .zap:hover{transform:scale(1.09);}
 .zap svg{width:27px;height:27px;}
 @media (max-width:680px){ .zap{right:1rem;bottom:1rem;width:50px;height:50px;} }
 
-/* ==========================================================================
-   Menu mobile
-   ========================================================================== */
-@media (max-width:900px){
-  .nav-links{display:none;}
-  .menu-toggle{display:block;}
-  .nav-links.aberto{
-    display:flex;flex-direction:column;gap:1.4rem;
-    position:absolute;top:100%;left:0;right:0;
-    background:var(--grafite-900);
-    padding:1.8rem 1.5rem 2rem;
-    border-bottom:1px solid var(--linha);
-  }
-}
+/* O menu do celular virou tela cheia — está na camada mobile, mais abaixo. */
 
 /* ==========================================================================
    Página institucional simples (privacidade)
@@ -728,6 +715,413 @@ footer{
 .hero-imagem{animation:sobe 1.4s var(--ease-saida) both;}
 
 /* ==========================================================================
+   CAMADA MOBILE
+   O conceito do site é placa de bronze gravada, e no celular ele perdia
+   justamente as peças que sustentam esse conceito: o fio de prumo sumia
+   abaixo de 1280px, a luz do hero era exclusiva de ponteiro, o filete de
+   ouro das áreas só crescia no hover e a paralaxe da citação não funciona
+   em iOS. Aqui tudo isso volta, com o dedo e a rolagem no lugar do mouse.
+   ========================================================================== */
+
+/* Âncora não para atrás do cabeçalho grudado */
+html{scroll-padding-top:5rem;}
+
+/* ==========================================================================
+   Fio de prumo — volta ao celular
+   É o fio da balança, o elemento que dá nome ao gesto da página. Ficava de
+   fora abaixo de 1280px, ou seja, em todo telefone. Encostado na margem ele
+   funciona igual: uma régua de leitura na borda da tela.
+   ========================================================================== */
+@media (max-width:1280px){
+  .prumo{display:block;left:.9rem;}
+  .prumo-peso{
+    width:6px;height:6px;margin-left:-3px;margin-top:-3px;
+    box-shadow:0 0 8px rgba(212,184,118,.7);
+  }
+}
+@media (max-width:420px){
+  .prumo{left:.55rem;}
+}
+
+/* ==========================================================================
+   Toque: retorno no :active, alvos maiores
+   ========================================================================== */
+@media (hover:none),(pointer:coarse){
+  a,button,summary,label,.area{-webkit-tap-highlight-color:transparent;}
+
+  .btn:active{transform:translateY(1px) scale(.98);}
+  .btn-ouro:active{background:linear-gradient(180deg,var(--ouro),#96793f);}
+  .btn-fantasma:active{border-color:var(--ouro);color:var(--ouro-claro);}
+  .zap:active{transform:scale(.93);}
+  .contato-lista a:active,.rodape-dados a:active{color:var(--ouro-claro);}
+  .nav-links a:active{color:var(--ouro-claro);}
+
+  /* Botão de largura cheia rende melhor no polegar */
+  .hero-acoes{gap:.75rem;}
+  .hero-acoes .btn{flex:1 1 100%;padding:1.05rem 1.6rem;}
+
+  .duvida summary{padding-block:1.35rem;}
+  .contato-lista a{display:inline-block;padding-block:.3rem;}
+}
+
+/* ==========================================================================
+   Hero — a luz existe sem ponteiro e a imagem tem profundidade
+   ========================================================================== */
+@media (hover:none),(pointer:coarse){
+  /* A luz de ouro deixa de esperar o mouse: ela caminha sozinha pelo hero,
+     e o toque a puxa para onde o dedo encostou. */
+  .hero-luz{
+    opacity:1;
+    background:radial-gradient(420px circle at var(--mx,50%) var(--my,32%),
+               rgba(176,144,79,.16), transparent 70%);
+    transition:background .8s ease;
+    animation:luzCaminha 16s ease-in-out infinite alternate;
+  }
+  .hero.tocado .hero-luz{animation:none;}
+}
+@keyframes luzCaminha{
+  from{--mx:26%;--my:24%;}
+  to  {--mx:76%;--my:44%;}
+}
+/* Sem @property o navegador não interpola as posições da luz */
+@property --mx{ syntax:'<percentage>'; inherits:true; initial-value:50%; }
+@property --my{ syntax:'<percentage>'; inherits:true; initial-value:32%; }
+
+@media (max-width:960px){
+  .hero-imagem{height:min(340px,42svh);overflow:hidden;}
+  /* A escultura respira devagar em vez de ficar como um bloco parado */
+  .hero-imagem img{animation:respiraFoto 22s ease-in-out infinite alternate;}
+  .balanca{width:86px;height:86px;margin-bottom:1.2rem;}
+  .hero h1{font-size:clamp(2.3rem,9vw,3.2rem);margin:1.1rem 0 1.3rem;}
+  .hero-sub{font-size:1rem;}
+  .hero-dados{gap:1.5rem 2rem;padding-top:1.5rem;}
+  .dado-valor{font-size:1.3rem;}
+}
+@keyframes respiraFoto{
+  from{transform:scale(1) translateY(0);}
+  to  {transform:scale(1.09) translateY(-8px);}
+}
+
+/* A foto do hero desliza contra a rolagem: dá camada onde antes era um corte seco */
+@supports (animation-timeline: view()){
+  @media (max-width:960px){
+    .hero-imagem img{
+      animation:fotoParalaxe linear both;
+      animation-timeline:view();
+      animation-range:entry 0% exit 100%;
+    }
+  }
+}
+@keyframes fotoParalaxe{
+  from{transform:scale(1.14) translateY(-6%);}
+  to  {transform:scale(1.14) translateY(6%);}
+}
+
+/* A balança devolve o toque: bate de novo quando o dedo encosta */
+@media (hover:none),(pointer:coarse){
+  .balanca{cursor:pointer;}
+  .balanca.batendo .viga{animation:assenta 2.4s var(--ease-saida) both;}
+  .balanca.batendo .prato-e,
+  .balanca.batendo .prato-d{animation:assenta-inv 2.4s var(--ease-saida) both;}
+}
+
+/* ==========================================================================
+   Placa de bronze — a luz atravessa a gravação quando ela entra
+   No desktop a placa já é o centro da seção. No celular ela chegava e ficava
+   parada. Agora uma faixa de luz corre pelo metal e as linhas gravadas
+   aparecem em cascata, uma a uma, como quem lê o registro.
+   ========================================================================== */
+@media (hover:none),(pointer:coarse){
+.placa{overflow:hidden;}
+.placa::after{
+  content:"";position:absolute;top:0;bottom:0;left:-60%;width:55%;
+  background:linear-gradient(100deg,
+    transparent 0%,
+    rgba(246,244,239,.05) 35%,
+    rgba(212,184,118,.16) 50%,
+    rgba(246,244,239,.05) 65%,
+    transparent 100%);
+  transform:skewX(-14deg);
+  pointer-events:none;opacity:0;
+}
+.placa.visivel::after{animation:luzNoMetal 1.5s cubic-bezier(.3,0,.2,1) .35s both;}
+@keyframes luzNoMetal{
+  0%  {opacity:0;left:-60%;}
+  12% {opacity:1;}
+  88% {opacity:1;}
+  100%{opacity:0;left:105%;}
+}
+
+.placa-linha{
+  opacity:0;transform:translateY(10px);
+  transition:opacity .6s var(--ease-saida), transform .6s var(--ease-saida);
+}
+.placa.visivel .placa-linha{opacity:1;transform:none;}
+.placa.visivel .placa-linha:nth-of-type(1){transition-delay:.34s;}
+.placa.visivel .placa-linha:nth-of-type(2){transition-delay:.42s;}
+.placa.visivel .placa-linha:nth-of-type(3){transition-delay:.50s;}
+.placa.visivel .placa-linha:nth-of-type(4){transition-delay:.58s;}
+.placa.visivel .placa-linha:nth-of-type(5){transition-delay:.66s;}
+}
+
+@media (max-width:640px){
+  .placa{padding:2rem 1.5rem;}
+  .placa-linha{flex-wrap:wrap;gap:.2rem .8rem;padding:.75rem 0;}
+  .placa-valor{text-align:left;}
+}
+
+/* ==========================================================================
+   Citação — paralaxe de verdade
+   O background-attachment:fixed é ignorado no iOS e desligado aqui abaixo de
+   820px, então a faixa virava uma foto parada. A imagem sai do background e
+   vira camada própria, que desliza contra a rolagem.
+   ========================================================================== */
+@media (max-width:820px){
+  .citacao{
+    background-image:none;
+    background-color:var(--grafite-900);
+    overflow:hidden;
+  }
+  .citacao::before{
+    content:"";position:absolute;left:0;right:0;top:-14%;bottom:-14%;
+    background:url('../assets/img/balanca-macro.webp') center/cover no-repeat;
+    z-index:0;
+  }
+  .citacao::after{
+    content:"";position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg,rgba(13,14,16,.84),rgba(13,14,16,.93));
+  }
+  .citacao .container{position:relative;z-index:2;}
+}
+@supports (animation-timeline: view()){
+  @media (max-width:820px){
+    .citacao::before{
+      animation:citaParalaxe linear both;
+      animation-timeline:view();
+      animation-range:entry 0% exit 100%;
+    }
+  }
+}
+@keyframes citaParalaxe{
+  from{transform:translateY(-9%);}
+  to  {transform:translateY(9%);}
+}
+
+/* ==========================================================================
+   Áreas — o filete de ouro segue a leitura
+   No desktop o hover acende a linha. No celular quem acende é a rolagem: a
+   área que está no meio da tela é a que fica gravada, e a seta aparece.
+   ========================================================================== */
+@media (hover:none),(pointer:coarse){
+  .area{transition:padding-left .5s var(--ease-saida), background .5s ease;}
+  .area.ativa{padding-left:1.4rem;background:rgba(246,244,239,.028);}
+  .area.ativa::before{transform:scaleY(1);}
+  .area.ativa .area-num{color:var(--ouro-claro);}
+  .area.ativa .area-corpo h3{color:var(--osso);}
+}
+@media (max-width:640px){
+  /* A seta volta: ela é o sinal de que aquela área está ativa */
+  .area-seta{display:block;}
+  .area{grid-template-columns:auto 1fr auto;gap:1rem;padding:1.5rem .3rem;}
+  .area-seta svg{width:16px;height:16px;}
+  .area.ativa .area-seta{opacity:1;transform:translateX(0);}
+}
+
+/* ==========================================================================
+   Confiança — a nota e as estrelas entram no ritmo
+   ========================================================================== */
+@media (hover:none),(pointer:coarse){
+  .nota-estrelas{display:inline-flex;gap:.1em;letter-spacing:0;}
+  .nota-estrelas span{
+    opacity:0;transform:scale(.4) rotate(-25deg);
+    transition:opacity .5s var(--ease-saida), transform .55s cubic-bezier(.34,1.45,.64,1);
+  }
+  .nota-bloco.visivel .nota-estrelas span{opacity:1;transform:none;}
+  .nota-bloco.visivel .nota-estrelas span:nth-child(1){transition-delay:.20s;}
+  .nota-bloco.visivel .nota-estrelas span:nth-child(2){transition-delay:.30s;}
+  .nota-bloco.visivel .nota-estrelas span:nth-child(3){transition-delay:.40s;}
+  .nota-bloco.visivel .nota-estrelas span:nth-child(4){transition-delay:.50s;}
+  .nota-bloco.visivel .nota-estrelas span:nth-child(5){transition-delay:.60s;}
+
+  .avaliador{
+    opacity:0;transform:translateY(14px);
+    transition:opacity .6s var(--ease-saida), transform .6s var(--ease-saida);
+  }
+  .avaliadores.visivel .avaliador:nth-child(1){opacity:1;transform:none;transition-delay:.10s;}
+  .avaliadores.visivel .avaliador:nth-child(2){opacity:1;transform:none;transition-delay:.20s;}
+  .avaliadores.visivel .avaliador:nth-child(3){opacity:1;transform:none;transition-delay:.30s;}
+}
+
+/* ==========================================================================
+   Dúvidas — a resposta abre com altura animada
+   O <details> abria com corte seco. Com ::details-content e interpolate-size
+   ele desliza; onde não houver suporte, continua abrindo como antes.
+   ========================================================================== */
+@supports (interpolate-size: allow-keywords){
+  :root{interpolate-size:allow-keywords;}
+}
+@supports selector(::details-content){
+  .duvida::details-content{
+    block-size:0;overflow:hidden;
+    transition:block-size .45s var(--ease-saida),
+               content-visibility .45s allow-discrete;
+  }
+  .duvida[open]::details-content{block-size:auto;}
+}
+@media (hover:none),(pointer:coarse){
+  .duvida[open] summary{color:var(--ouro-claro);}
+  .duvida summary:active{color:var(--ouro-claro);}
+}
+
+/* ==========================================================================
+   Formulário
+   ========================================================================== */
+@media (max-width:900px){
+  /* Abaixo de 16px o iOS dá zoom no campo ao focar e desalinha a página */
+  .campo input,.campo textarea,.campo select{font-size:16px;padding:.75rem 0;}
+  .campo textarea{min-height:120px;}
+  .campo label{font-size:.66rem;}
+  .consentimento input{width:20px;height:20px;}
+  .mapa iframe{height:200px;}
+  /* Sem hover, o mapa já entra legível */
+  .mapa{filter:grayscale(.55) contrast(.95) brightness(.95);}
+}
+/* A linha do campo cresce do centro quando ele recebe foco.
+   No desktop o campo já responde pela cor da borda: isto é só para o toque. */
+@media (hover:none),(pointer:coarse){
+.campo{position:relative;}
+.campo input,.campo textarea,.campo select{position:relative;z-index:1;}
+.campo:has(input,textarea,select)::after{
+  content:"";position:absolute;left:50%;right:50%;bottom:0;height:1px;
+  background:var(--ouro);
+  transition:left .35s var(--ease-saida), right .35s var(--ease-saida);
+}
+.campo:focus-within::after{left:0;right:0;}
+}
+
+/* ==========================================================================
+   WhatsApp flutuante — um anel que chama a atenção e depois para
+   ========================================================================== */
+.zap{bottom:calc(1.6rem + env(safe-area-inset-bottom,0px));}
+@media (hover:none),(pointer:coarse){
+.zap::before{
+  content:"";position:absolute;inset:0;border-radius:50%;
+  border:1px solid var(--whatsapp);
+  animation:anelZap 2.6s ease-out 3s 3 both;
+  pointer-events:none;
+}
+}
+@keyframes anelZap{
+  0%  {transform:scale(1);opacity:.8;}
+  70% {transform:scale(1.65);opacity:0;}
+  100%{transform:scale(1.65);opacity:0;}
+}
+@media (max-width:680px){
+  .zap{right:1rem;bottom:calc(1rem + env(safe-area-inset-bottom,0px));width:50px;height:50px;}
+}
+
+/* ==========================================================================
+   Menu de tela cheia
+   O painel dobrado sob o cabeçalho era o trecho mais genérico da página.
+   Vira uma tela inteira em Didone, com os itens entrando em cascata e o
+   emblema da balança ao fundo.
+   ========================================================================== */
+@media (max-width:900px){
+  .menu-toggle{
+    display:block;position:relative;z-index:301;
+    width:44px;height:44px;font-size:1.5rem;
+  }
+
+  .nav-links{
+    display:flex;
+    position:fixed;z-index:300;
+    /* Não dá para usar inset:0 aqui: o backdrop-filter do cabeçalho o torna
+       bloco de referência de position:fixed, e inset:0 viraria o tamanho do
+       próprio cabeçalho. Como ele é sticky em top:0, a origem dele é sempre
+       (0,0) — medir a tela explicitamente funciona com ou sem esse efeito. */
+    top:0;left:0;width:100vw;height:100vh;height:100dvh;
+    flex-direction:column;justify-content:center;align-items:stretch;
+    gap:0;
+    padding:0 8vw calc(3rem + env(safe-area-inset-bottom,0px));
+    background:var(--grafite-900);
+    visibility:hidden;opacity:0;pointer-events:none;
+    transition:opacity .4s var(--ease-saida), visibility 0s linear .4s;
+  }
+  /* Moldura dupla, a mesma da placa de bronze */
+  .nav-links::before{
+    content:"";position:absolute;inset:1.1rem;
+    border:1px solid rgba(176,144,79,.16);
+    pointer-events:none;
+  }
+  .nav-links::after{
+    content:"";position:absolute;right:-6vw;bottom:-4vh;
+    width:min(280px,64vw);aspect-ratio:1;
+    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b0904f' stroke-width='.55'%3E%3Cpath d='M12 4v16M6 20h12M12 6l-6 2M12 6l6 2'/%3E%3Cpath d='M6 8l-2.4 5a2.6 2.6 0 0 0 4.8 0Z'/%3E%3Cpath d='M18 8l-2.4 5a2.6 2.6 0 0 0 4.8 0Z'/%3E%3C/svg%3E") no-repeat center/contain;
+    opacity:0;transform:translateY(24px);
+    transition:opacity .9s var(--ease-saida) .18s, transform .9s var(--ease-saida) .18s;
+    pointer-events:none;
+  }
+  .nav-links.aberto{
+    visibility:visible;opacity:1;pointer-events:auto;
+    transition:opacity .4s var(--ease-saida), visibility 0s linear 0s;
+  }
+  .nav-links.aberto::after{opacity:.5;transform:none;}
+
+  .nav-links li{
+    list-style:none;position:relative;
+    border-bottom:1px solid var(--linha);
+    counter-increment:menu;
+  }
+  .nav-links{counter-reset:menu;}
+  .nav-links li::before{
+    content:"0" counter(menu);
+    position:absolute;right:0;top:50%;transform:translateY(-50%);
+    font-size:.62rem;letter-spacing:.2em;color:var(--ouro);
+    font-weight:600;
+    opacity:0;transition:opacity .5s ease .3s;
+  }
+  .nav-links.aberto li::before{opacity:.8;}
+
+  .nav-links a{
+    display:block;padding:1.05rem 0;
+    font-family:'Bodoni Moda',Didot,serif;
+    font-size:clamp(1.8rem,8vw,2.5rem);font-weight:400;
+    letter-spacing:0;text-transform:none;
+    color:var(--osso);
+    opacity:0;transform:translateY(22px);
+    transition:opacity .55s var(--ease-saida), transform .55s var(--ease-saida),
+               color .3s ease;
+  }
+  .nav-links a::after{bottom:.9rem;}
+  .nav-links a.ativo{color:var(--ouro-claro);}
+  .nav-links.aberto a{opacity:1;transform:none;}
+  .nav-links.aberto li:nth-child(1) a{transition-delay:.08s;}
+  .nav-links.aberto li:nth-child(2) a{transition-delay:.14s;}
+  .nav-links.aberto li:nth-child(3) a{transition-delay:.20s;}
+  .nav-links.aberto li:nth-child(4) a{transition-delay:.26s;}
+  .nav-links.aberto li:nth-child(5) a{transition-delay:.32s;}
+
+  body.menu-aberto{overflow:hidden;}
+  /* O cabeçalho tem z-index 50 e cria contexto de empilhamento: o menu (300)
+     vive dentro dele, então o botão do WhatsApp (70) ficava por cima. */
+  body.menu-aberto .zap{opacity:0;pointer-events:none;}
+  body.menu-aberto header{background:var(--grafite-900);border-bottom-color:transparent;}
+}
+
+/* ==========================================================================
+   Ritmo geral no celular
+   ========================================================================== */
+@media (max-width:820px){
+  section{padding:5rem 0;}
+  .citacao{padding:5.5rem 0;}
+  .cabeca{margin-bottom:2.8rem;}
+  .sobre-grade{gap:2.6rem;}
+  .rodape-grade{margin-bottom:2rem;}
+  /* O botão do WhatsApp fica no canto: o rodapé precisa de folga */
+  footer{padding-bottom:5.5rem;}
+}
+
+/* ==========================================================================
    Movimento reduzido — desliga tudo que se move
    ========================================================================== */
 @media (prefers-reduced-motion:reduce){
@@ -735,6 +1129,12 @@ footer{
   .viga,.prato-e,.prato-d{animation:none !important;}
   .prumo-fio,.prumo-peso{transition:none !important;}
   .citacao{background-attachment:scroll !important;}
+  /* Animação ligada à rolagem ignora duração: precisa ser desligada pelo nome */
+  .hero-imagem img,.citacao::before,.hero-luz,.placa::after,.zap::before{animation:none !important;}
+  .placa-linha,.avaliador,.nota-estrelas span{opacity:1 !important;transform:none !important;}
+  .nav-links a,.nav-links li::before,.nav-links::after{opacity:1 !important;transform:none !important;}
+  .duvida::details-content{transition:none !important;}
+  .campo:has(input,textarea,select)::after{transition:none !important;}
   *,*::before,*::after{
     animation-duration:.001ms !important;
     animation-iteration-count:1 !important;
